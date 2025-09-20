@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/cuentas")
+@RequestMapping("/api/v1/accounts")
 public class CuentaController {
 
     private final CuentaService cuentaService;
