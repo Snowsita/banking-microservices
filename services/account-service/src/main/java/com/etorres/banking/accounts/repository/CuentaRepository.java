@@ -4,6 +4,7 @@ import com.etorres.banking.accounts.model.Cuenta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +17,12 @@ public interface CuentaRepository extends JpaRepository<Cuenta, Long> {
      * @return Una cuenta envuelta en un Optional si se encuentra, o un Optional vacío si no se encuentra.
      */
     Optional<Cuenta> findByAccountNumber(String accountNumber);
+
+    /**
+     * Encuentra todas las cuentas asociadas a un ID de cliente específico.
+     *
+     * @param clientId el ID del cliente cuyas cuentas se desean buscar
+     * @return Una lista de cuentas asociadas al ID del cliente proporcionado
+     */
+    List<Cuenta> findByClientId(String clientId);
 }
