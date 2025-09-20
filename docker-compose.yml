@@ -1,4 +1,5 @@
 services:
+  # DATABASE SERVICE
   postgres-db:
     image: postgres:15
     container_name: postgres-db
@@ -13,7 +14,64 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
     networks:
       - banking-network
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d client_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API GATEWAY SERVICE
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: ../../Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - banking-network
+    depends_on:
+      client-service:
+        condition: service_started
+      account-service:
+        condition: service_started
+
+  # CLIENT SERVICE
+  client-service:
+    build:
+      context: ./services/client-service
+      dockerfile: ../../Dockerfile
+    container_name: client-service
+    ports:
+      - "9080:9080"
+    networks:
+      - banking-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=9080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/client_db
+      - SPRING_SECURITY_USER_NAME=admin
+      - SPRING_SECURITY_USER_PASSWORD=password
+
+  # ACCOUNT SERVICE
+  account-service:
+    build:
+      context: ./services/account-service
+      dockerfile: ../../Dockerfile
+    container_name: account-service
+    ports:
+      - "9090:9090"
+    networks:
+      - banking-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/account_db
+      - CLIENT_SERVICE_BASE-URL=http://client-service:9080/api/v1
 
 volumes:
   postgres_data:
