@@ -53,6 +53,8 @@ public class ReporteServiceImpl implements ReporteService {
         }).toList();
 
         String dateRange = String.format("%s to %s", startDate, endDate);
+
+        // TODO Fetch client name from gateway service
         String clientName = "Placeholder";
 
         return new CuentaStatementDTO(dateRange, clientName, accountDetails);

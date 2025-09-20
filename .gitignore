@@ -1,0 +1,36 @@
+# .gitignore for Java, Spring Boot, Maven
+
+# Maven target directory
+/target/
+
+# Eclipse, IntelliJ IDEA, NetBeans project files
+*.iml
+*.ipr
+*.iws
+.idea/
+*.nb-gradle/
+*.nbproject/
+*.settings/
+*.classpath
+*.project
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build output
+/build/
+out/
+
+# Dependency directories
+/node_modules/
+bower_components/
+
+# Environment files
+.env
+
+# Application properties (optional, if you want to ignore local config)
+/application-local.properties
