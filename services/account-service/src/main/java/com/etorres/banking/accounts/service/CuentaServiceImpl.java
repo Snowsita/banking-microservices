@@ -2,6 +2,7 @@ package com.etorres.banking.accounts.service;
 
 import com.etorres.banking.accounts.dto.CuentaRequestDTO;
 import com.etorres.banking.accounts.dto.CuentaResponseDTO;
+import com.etorres.banking.accounts.dto.CuentaUpdateRequestDTO;
 import com.etorres.banking.accounts.model.Cuenta;
 import com.etorres.banking.accounts.repository.CuentaRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class CuentaServiceImpl implements CuentaService {
         Cuenta savedCuenta = cuentaRepository.save(newCuenta);
 
         return new CuentaResponseDTO(
+                savedCuenta.getId(),
                 savedCuenta.getAccountNumber(),
                 savedCuenta.getAccountType(),
                 savedCuenta.getInitialBalance(),
@@ -44,6 +46,7 @@ public class CuentaServiceImpl implements CuentaService {
     public Optional<CuentaResponseDTO> findByAccountNumber(String accountNumber) {
         return cuentaRepository.findByAccountNumber(accountNumber)
                 .map(cuenta -> new CuentaResponseDTO(
+                        cuenta.getId(),
                         cuenta.getAccountNumber(),
                         cuenta.getAccountType(),
                         cuenta.getInitialBalance(),
@@ -52,4 +55,26 @@ public class CuentaServiceImpl implements CuentaService {
                         cuenta.getClientId()
                 ));
     }
+
+    @Override
+    @Transactional
+    public Optional<CuentaResponseDTO> update(String accountNumber, CuentaUpdateRequestDTO request) {
+        return cuentaRepository.findByAccountNumber(accountNumber).map(cuenta -> {
+            cuenta.setAccountType(request.accountType());
+            cuenta.setStatus(request.status());
+
+            Cuenta updatedCuenta = cuentaRepository.save(cuenta);
+
+            return new CuentaResponseDTO(
+                    updatedCuenta.getId(),
+                    updatedCuenta.getAccountNumber(),
+                    updatedCuenta.getAccountType(),
+                    updatedCuenta.getInitialBalance(),
+                    updatedCuenta.getCurrentBalance(),
+                    updatedCuenta.getStatus(),
+                    updatedCuenta.getClientId()
+            );
+        });
+    }
+
 }

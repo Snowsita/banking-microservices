@@ -2,6 +2,7 @@ package com.etorres.banking.accounts.controller;
 
 import com.etorres.banking.accounts.dto.CuentaRequestDTO;
 import com.etorres.banking.accounts.dto.CuentaResponseDTO;
+import com.etorres.banking.accounts.dto.CuentaUpdateRequestDTO;
 import com.etorres.banking.accounts.service.CuentaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,5 +42,21 @@ public class CuentaController {
         return cuentaService.findByAccountNumber(accountNumber)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Endpoint para actualizar los detalles de una cuenta bancaria existente.
+     * HTTP Method: PUT
+     * URL: /api/v1/cuentas/{accountNumber}
+     * @param accountNumber El número de cuenta de la cuenta a actualizar.
+     * @param request DTO que contiene los nuevos datos para la cuenta.
+     * @return DTO con los datos actualizados de la cuenta si se encuentra, o 404 Not Found si no existe.
+     */
+    @PutMapping("/{accountNumber}")
+    public ResponseEntity<CuentaResponseDTO> updateAccount(@PathVariable String accountNumber, @RequestBody CuentaUpdateRequestDTO request) {
+        return cuentaService.update(accountNumber, request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound()
+                        .build());
     }
 }
