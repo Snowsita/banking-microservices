@@ -6,6 +6,9 @@ import com.etorres.banking.accounts.model.Cuenta;
 import com.etorres.banking.accounts.repository.CuentaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +17,7 @@ public class CuentaServiceImpl implements CuentaService {
     private final CuentaRepository cuentaRepository;
 
     @Override
+    @Transactional
     public CuentaResponseDTO create(CuentaRequestDTO request) {
         Cuenta newCuenta = new Cuenta();
         newCuenta.setAccountNumber(request.accountNumber());
@@ -33,5 +37,19 @@ public class CuentaServiceImpl implements CuentaService {
                 savedCuenta.getStatus(),
                 savedCuenta.getClientId()
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<CuentaResponseDTO> findByAccountNumber(String accountNumber) {
+        return cuentaRepository.findByAccountNumber(accountNumber)
+                .map(cuenta -> new CuentaResponseDTO(
+                        cuenta.getAccountNumber(),
+                        cuenta.getAccountType(),
+                        cuenta.getInitialBalance(),
+                        cuenta.getCurrentBalance(),
+                        cuenta.getStatus(),
+                        cuenta.getClientId()
+                ));
     }
 }
