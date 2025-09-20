@@ -27,6 +27,9 @@ public class Cuenta {
     @Column(name = "initial_balance", nullable = false)
     private BigDecimal initialBalance;
 
+    @Column(name = "current_balance", nullable = false)
+    private BigDecimal currentBalance;
+
     @Column(name = "status", nullable = false)
     private Boolean status;
 
