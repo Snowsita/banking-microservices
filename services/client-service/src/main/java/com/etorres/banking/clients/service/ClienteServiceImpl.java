@@ -4,6 +4,7 @@ import com.etorres.banking.clients.dto.ClienteDTO;
 import com.etorres.banking.clients.model.Cliente;
 import com.etorres.banking.clients.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +16,13 @@ import java.util.Optional;
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public ClienteDTO createCliente(ClienteDTO clienteDTO) {
         Cliente cliente = convertToEntity(clienteDTO);
-        // TODO HASH DE CONTRASENA
+        cliente.setPassword(passwordEncoder.encode("password"));
         Cliente savedCliente = clienteRepository.save(cliente);
         return convertToDTO(savedCliente);
     }
