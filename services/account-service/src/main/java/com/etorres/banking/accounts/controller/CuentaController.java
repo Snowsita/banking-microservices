@@ -5,6 +5,7 @@ import com.etorres.banking.accounts.dto.CuentaResponseDTO;
 import com.etorres.banking.accounts.service.CuentaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,5 +27,19 @@ public class CuentaController {
     @ResponseStatus(HttpStatus.CREATED)
     public CuentaResponseDTO createAccount(@RequestBody CuentaRequestDTO request) {
         return cuentaService.create(request);
+    }
+
+    /**
+     * Endpoint para obtener los detalles de una cuenta bancaria por su número de cuenta.
+     * HTTP Method: GET
+     * URL: /api/v1/cuentas/{accountNumber}
+     * @param accountNumber El número de cuenta a buscar.
+     * @return DTO con los datos de la cuenta si se encuentra, o 404 Not Found si no existe.
+     */
+    @GetMapping("/{accountNumber}")
+    public ResponseEntity<CuentaResponseDTO> getAccountByNumber(@PathVariable String accountNumber) {
+        return cuentaService.findByAccountNumber(accountNumber)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
