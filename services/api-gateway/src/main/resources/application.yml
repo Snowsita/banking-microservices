@@ -5,13 +5,21 @@ spring:
         - id: client_service_route
           uri: http://localhost:9080
           predicates:
-            - Path=/api/v1/clients/**
+            - Path=/api/v1/clients/**, /v3/api-docs/client-service
         - id: account_service_route
           uri: http://localhost:9090
           predicates:
-            - Path=/api/v1/accounts/**, /api/v1/movements/**, /api/v1/reports/**
+            - Path=/api/v1/accounts/**, /api/v1/movements/**, /api/v1/reports/**, /v3/api-docs/account-service
   application:
     name: api-gateway
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Client Service
+        url: /v3/api-docs/client-service
+      - name: Account Service
+        url: /v3/api-docs/account-service
 
 server:
   port: 8080
