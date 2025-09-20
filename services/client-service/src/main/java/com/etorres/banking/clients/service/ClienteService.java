@@ -1,6 +1,7 @@
 package com.etorres.banking.clients.service;
 
 import com.etorres.banking.clients.dto.ClienteDTO;
+import com.etorres.banking.clients.dto.CreateClientRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ public interface ClienteService {
      * @param clienteDTO La data del cliente a crear.
      * @return La data creada del cliente.
      */
-    ClienteDTO createCliente(ClienteDTO clienteDTO);
+    ClienteDTO createCliente(CreateClientRequest clienteDTO);
 
     /**
      * Obtiene la lista de todos los clientes en el sistema.

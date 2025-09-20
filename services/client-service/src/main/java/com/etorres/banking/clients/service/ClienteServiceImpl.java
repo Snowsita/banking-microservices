@@ -1,6 +1,7 @@
 package com.etorres.banking.clients.service;
 
 import com.etorres.banking.clients.dto.ClienteDTO;
+import com.etorres.banking.clients.dto.CreateClientRequest;
 import com.etorres.banking.clients.model.Cliente;
 import com.etorres.banking.clients.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,18 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional
-    public ClienteDTO createCliente(ClienteDTO clienteDTO) {
-        Cliente cliente = convertToEntity(clienteDTO);
-        cliente.setPassword(passwordEncoder.encode("password"));
+    public ClienteDTO createCliente(CreateClientRequest createClientRequest) {
+        Cliente cliente = new Cliente();
+        cliente.setClientId(createClientRequest.clientId());
+        cliente.setPassword(passwordEncoder.encode(createClientRequest.password()));
+        cliente.setName(createClientRequest.name());
+        cliente.setGender(createClientRequest.gender());
+        cliente.setAge(createClientRequest.age());
+        cliente.setIdentification(createClientRequest.identification());
+        cliente.setAddress(createClientRequest.address());
+        cliente.setPhone(createClientRequest.phone());
+        cliente.setStatus(createClientRequest.status());
+
         Cliente savedCliente = clienteRepository.save(cliente);
         return convertToDTO(savedCliente);
     }
@@ -79,20 +89,5 @@ public class ClienteServiceImpl implements ClienteService {
                 cliente.getPhone(),
                 cliente.getStatus()
         );
-    }
-
-    private Cliente convertToEntity(ClienteDTO clienteDTO) {
-        Cliente cliente = new Cliente();
-        cliente.setClientId(clienteDTO.clientId());
-        cliente.setPassword("temporary_password"); // TODO: Replace with actual password hashing
-        cliente.setName(clienteDTO.name());
-        cliente.setGender(clienteDTO.gender());
-        cliente.setAge(clienteDTO.age());
-        cliente.setIdentification(clienteDTO.identification());
-        cliente.setAddress(clienteDTO.address());
-        cliente.setPhone(clienteDTO.phone());
-        cliente.setStatus(clienteDTO.status());
-
-        return cliente;
     }
 }

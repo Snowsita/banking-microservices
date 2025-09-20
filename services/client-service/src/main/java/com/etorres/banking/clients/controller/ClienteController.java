@@ -1,6 +1,7 @@
 package com.etorres.banking.clients.controller;
 
 import com.etorres.banking.clients.dto.ClienteDTO;
+import com.etorres.banking.clients.dto.CreateClientRequest;
 import com.etorres.banking.clients.service.ClienteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,13 @@ public class ClienteController {
      * HTTP METHOD: POST
      * URL: /api/v1/clientes
      * Response Status: 201 Created
-     * @param clienteDTO La data del cliente a crear.
+     * @param createClientRequest La data del cliente a crear.
      * @return La data creada del cliente.
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ClienteDTO createCliente(@RequestBody ClienteDTO clienteDTO) {
-        return clienteService.createCliente(clienteDTO);
+    public ClienteDTO createCliente(@RequestBody CreateClientRequest createClientRequest) {
+        return clienteService.createCliente(createClientRequest);
     }
 
     /**
