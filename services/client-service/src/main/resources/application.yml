@@ -1,13 +1,11 @@
 spring:
   application:
     name: client-service
-
   datasource:
     url: jdbc:postgresql://localhost:5432/client_db
     username: user
     password: password
     driver-class-name: org.postgresql.Driver
-
   jpa:
     properties:
       hibernate:
@@ -16,6 +14,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  security:
+    user:
+      name: admin
+      password: password
 
 server:
   port: 9080
