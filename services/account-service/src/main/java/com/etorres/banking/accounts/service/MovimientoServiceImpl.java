@@ -2,6 +2,7 @@ package com.etorres.banking.accounts.service;
 
 import com.etorres.banking.accounts.dto.MovimientoRequestDTO;
 import com.etorres.banking.accounts.dto.MovimientoResponseDTO;
+import com.etorres.banking.accounts.exception.SaldoInsuficienteException;
 import com.etorres.banking.accounts.model.Cuenta;
 import com.etorres.banking.accounts.model.Movimiento;
 import com.etorres.banking.accounts.repository.CuentaRepository;
