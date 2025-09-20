@@ -1,13 +1,11 @@
 spring:
   application:
-    name: client-service
-
+    name: account-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/client_db
+    url: jdbc:postgresql://localhost:5432/account_db
     username: user
     password: password
     driver-class-name: org.postgresql.Driver
-
   jpa:
     properties:
       hibernate:
@@ -18,4 +16,4 @@ spring:
     show-sql: true
 
 server:
-  port: 9080
+  port: 9090
