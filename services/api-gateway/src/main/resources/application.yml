@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: client_service_route
+          uri: http://localhost:9080
+          predicates:
+            - Path=/api/v1/clients/**
+        - id: account_service_route
+          uri: http://localhost:9090
+          predicates:
+            - Path=/api/v1/accounts/**, /api/v1/movements/**, /api/v1/reports/**
+  application:
+    name: api-gateway
+
+server:
+  port: 8080
