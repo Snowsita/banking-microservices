@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: client-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/client_db
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
