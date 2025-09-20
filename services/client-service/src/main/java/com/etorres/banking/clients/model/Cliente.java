@@ -19,5 +19,5 @@ public class Cliente extends Persona {
     private String password;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Boolean status;
 }
