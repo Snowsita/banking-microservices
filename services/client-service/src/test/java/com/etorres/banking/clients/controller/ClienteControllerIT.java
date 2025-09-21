@@ -16,6 +16,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +50,11 @@ public class ClienteControllerIT {
         clienteRepository.deleteAll();
     }
 
+    /**
+     * Test de integración para la creación de un cliente.
+     * Verifica que al enviar una solicitud POST a /api/v1/clientes con datos válidos,
+     * se cree un nuevo cliente en la base de datos y se retornen los datos correctos.
+     */
     @Test
     void whenPostCliente_thenCreatesClienteInDb() throws Exception {
         var createRequest = new CreateClientRequest(
@@ -64,6 +70,7 @@ public class ClienteControllerIT {
         );
 
         mockMvc.perform(post("/api/v1/clientes")
+                        .with(httpBasic("admin", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isCreated())

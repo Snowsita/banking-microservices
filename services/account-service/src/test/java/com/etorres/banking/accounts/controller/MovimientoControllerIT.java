@@ -69,6 +69,10 @@ public class MovimientoControllerIT {
         cuentaRepository.save(testAccount);
     }
 
+    /**
+     * Test para verificar la creación de un movimiento y la actualización del balance de la cuenta.
+     * Verifica que el movimiento se crea correctamente y que el balance de la cuenta se actualiza.
+     */
     @Test
     void whenPostMovement_thenCreatesMovementAndUpdatesBalance() throws  Exception {
         var request = new MovimientoRequestDTO("123456", new BigDecimal("250.00"));

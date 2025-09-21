@@ -37,6 +37,10 @@ public class MovimientoServiceImplTest {
         testAccount.setCurrentBalance(new BigDecimal("100.00"));
     }
 
+    /**
+     * Test para verificar la creación de un movimiento con fondos suficientes.
+     * Verifica que el balance de la cuenta se actualiza correctamente.
+     */
     @Test
     void whenCreateMovement_withSufficientFunds_thenBalanceIsUpdated() {
         var request = new MovimientoRequestDTO("123456", new BigDecimal("-50.00"));
@@ -52,6 +56,10 @@ public class MovimientoServiceImplTest {
         verify(cuentaRepository, times(1)).save(any(Cuenta.class));
     }
 
+    /**
+     * Test para verificar la creación de un movimiento con fondos insuficientes.
+     * Verifica que se lanza una excepción de saldo insuficiente y que no se actualiza el balance.
+     */
     @Test
     void whenCreateMovement_withInsufficientFunds_thenThrowException() {
         var request = new MovimientoRequestDTO("123456", new BigDecimal("-200.00"));
