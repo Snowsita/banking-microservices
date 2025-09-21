@@ -10,7 +10,7 @@ spring:
             - id: client-service
               uri: http://client-service:9080
               predicates:
-                - Path=/api/v1/clients/**, /api/v1/auth/**
+                - Path=/api/v1/clients/**
 
             - id: account-service
               uri: http://account-service:9090
