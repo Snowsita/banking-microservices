@@ -29,6 +29,13 @@ public interface ClienteService {
     Optional<ClienteDTO> getClienteById(Long id);
 
     /**
+     * Obtiene la data de un cliente por su clientId.
+     * @param clientId El clientId del cliente a buscar.
+     * @return La data del cliente si se encuentra, opcional en caso contrario.
+     */
+    Optional<ClienteDTO> getClienteById(String clientId);
+
+    /**
      * Actualiza la data de un cliente existente.
      * @param id El ID del cliente a actualizar.
      * @param clienteDTO La nueva data del cliente.

@@ -51,6 +51,12 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<ClienteDTO> getClienteById(String clientId) {
+        return clienteRepository.findByClientId(clientId).map(this::convertToDTO);
+    }
+
+    @Override
     @Transactional
     public Optional<ClienteDTO> updateCliente(Long id, ClienteDTO clienteDTO) {
         return clienteRepository.findById(id).map(existingCliente -> {

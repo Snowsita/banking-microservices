@@ -59,6 +59,21 @@ public class ClienteController {
     }
 
     /**
+     * Obtiene la data de un cliente por su clientId.
+     * HTTP METHOD: GET
+     * URL: /api/v1/clientes/clientId/{clientId}
+     * Response Status: 200 OK si se encuentra, 404 Not Found si no se encuentra.
+     * @param clientId El clientId del cliente a buscar.
+     * @return La data del cliente si se encuentra, 404 Not Found en caso contrario.
+     */
+    @GetMapping("/clientId/{clientId}")
+    public ResponseEntity<ClienteDTO> getClienteByClientId(@PathVariable String clientId) {
+        return clienteService.getClienteById(clientId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
      * Actualiza la data de un cliente existente.
      * HTTP METHOD: PUT
      * URL: /api/v1/clientes/{id}
