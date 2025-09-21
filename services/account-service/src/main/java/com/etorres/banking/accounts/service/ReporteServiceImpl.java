@@ -1,5 +1,6 @@
 package com.etorres.banking.accounts.service;
 
+import com.etorres.banking.accounts.client.ClientServiceFeignClient;
 import com.etorres.banking.accounts.dto.CuentaStatementDTO;
 import com.etorres.banking.accounts.dto.MovimientoResponseDTO;
 import com.etorres.banking.accounts.model.Cuenta;
@@ -20,6 +21,7 @@ public class ReporteServiceImpl implements ReporteService {
 
     private final CuentaRepository cuentaRepository;
     private final MovimientoRepository movimientoRepository;
+    private final ClientServiceFeignClient clientServiceFeignClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -54,8 +56,7 @@ public class ReporteServiceImpl implements ReporteService {
 
         String dateRange = String.format("%s to %s", startDate, endDate);
 
-        // TODO Fetch client name from gateway service
-        String clientName = "Placeholder";
+        String clientName = clientServiceFeignClient.getClientById(clientId).name();
 
         return new CuentaStatementDTO(dateRange, clientName, accountDetails);
     }
