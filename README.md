@@ -4,10 +4,11 @@ This is a banking services application built with a microservices architecture. 
 
 ## Architecture
 
-The application is composed of two main microservices:
+The application is composed of three main microservices:
 
 *   **`client-service`**: Manages all the information related to the clients.
 *   **`account-service`**: Manages the bank accounts and transactions of the clients.
+*   **`api-gateway`**: Acts as a single entry point for all the services.
 
 Each service is a Spring Boot application with its own PostgreSQL database.
 
@@ -31,47 +32,66 @@ The database used is PostgreSQL, it starts when the docker compose is executed f
 
 ## API Endpoints
 
+### API Gateway (`http://localhost:8080`)
+
+The API Gateway is the single entry point for all the services. The endpoints are:
+
+*   **Client Service:** `http://localhost:8080/api/v1/clients`
+*   **Account Service:** `http://localhost:8080/api/v1/accounts`, `http://localhost:8080/api/v1/movements` and `http://localhost:8080/api/v1/reports`
+
 ### Client Service (`http://localhost:9080`)
 
-*   **`POST /api/v1/clientes`**: Creates a new client.
-*   **`GET /api/v1/clientes`**: Retrieves a list of all clients.
-*   **`GET /api/v1/clientes/{id}`**: Retrieves a client by their ID.
-*   **`PUT /api/v1/clientes/{id}`**: Updates an existing client's information.
-*   **`DELETE /api/v1/clientes/{id}`**: Deletes a client by their ID.
+*   **`POST /api/v1/clients`**: Creates a new client.
+*   **`GET /api/v1/clients`**: Retrieves a list of all clients.
+*   **`GET /api/v1/clients/{id}`**: Retrieves a client by their ID.
+*   **`GET /api/v1/clients/clientId/{clientId}`**: Retrieves a client by their client ID.
+*   **`PUT /api/v1/clients/{id}`**: Updates an existing client's information.
+*   **`DELETE /api/v1/clients/{id}`**: Deletes a client by their ID.
 
 ### Account Service (`http://localhost:9090`)
 
-*   **`POST /api/v1/cuentas`**: Creates a new bank account.
-*   **`POST /api/v1/movimientos`**: Creates a new bank transaction. When a movement is registered, the account balance is updated. If the balance is insufficient, an error with the message "Saldo no disponible" is returned.
-*   **`GET /reports?fecha=<startDate>to<endDate>&cliente=<clientId>`**: Generates an account statement for a client within a specified date range. The report is returned in JSON format and includes the client's accounts with their balances and the details of the movements.
+*   **`POST /api/v1/accounts`**: Creates a new bank account.
+*   **`GET /api/v1/accounts/{accountNumber}`**: Retrieves a bank account by its account number.
+*   **`PUT /api/v1/accounts/{accountNumber}`**: Updates an existing bank account.
+*   **`POST /api/v1/movements`**: Creates a new bank transaction. When a movement is registered, the account balance is updated. If the balance is insufficient, an error with the message "Saldo no disponible" is returned.
+*   **`GET /api/v1/reports?clientId=<clientId>&startDate=<startDate>&endDate=<endDate>`**: Generates an account statement for a client within a specified date range. The report is returned in JSON format and includes the client's accounts with their balances and the details of the movements.
 
 ## How to Run
 
-1.  **Start the application:**
+1.  **Build the services:**
 
-    The entire application, including the microservices and the database, can be started using Docker Compose.
+    Before starting the application, you need to build the services. Navigate to the root directory of each service (`client-service`, `account-service`, and `api-gateway`) and run the following command:
 
     ```bash
-    docker-compose up -d
+    mvn clean package -DskipTests
     ```
 
-2.  **Verify the services:**
+2.  **Start the application:**
 
-    *   **Client Service:** `http://localhost:9080`
-    *   **Account Service:** `http://localhost:9090`
+    Once the services are built, the entire application, including the microservices and the database, can be started using Docker Compose.
+
+    ```bash
+    docker-compose up -d --build
+    ```
+
+3.  **Verify the services:**
+
+    *   **API Gateway:** `http://localhost:8080`
+    *   **Client Service:** `http://client-service:9080`
+    *   **Account Service:** `http://account-service:9090`
 
 ## API Documentation
 
-API documentation for each service is available through Swagger UI.
+API documentation for each service is available through Swagger UI at the API Gateway.
 
-*   **Client Service API:** `http://localhost:9080/swagger-ui.html`
-*   **Account Service API:** `http://localhost:9090/swagger-ui.html`
+*   **API Gateway Documentation:** `http://localhost:8080/swagger-ui.html`
 
 ## Testing
 
 The project includes unit and integration tests.
 
-*   **Unit Tests:** There is a unit test for the `Cliente` entity in the `client-service`.
-*   **Integration Tests:** There is an integration test for the `ClienteController` in the `client-service`.
-
 All tests can be run using the Maven `test` command in the root directory of each service.
+
+### Postman Collection
+
+A Postman collection is available in the `postman` directory to test the API endpoints. You can import the `postman_collection.json` file into Postman.
