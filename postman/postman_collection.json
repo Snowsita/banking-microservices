@@ -196,16 +196,16 @@
 							],
 							"query": [
 								{
+									"key": "clientId",
+									"value": "testuser"
+								},
+								{
 									"key": "startDate",
 									"value": "2025-01-01"
 								},
 								{
 									"key": "endDate",
 									"value": "2025-12-31"
-								},
-								{
-									"key": "clientId",
-									"value": "testuser"
 								}
 							]
 						}
