@@ -1,4 +1,5 @@
 services:
+  # DATABASE SERVICE
   postgres-db:
     image: postgres:15
     container_name: postgres-db
@@ -13,6 +14,56 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
     networks:
       - banking-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d client_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # CLIENT SERVICE
+  client-service:
+    build: ./services/client-service
+    container_name: client-service
+    networks:
+      - banking-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=9080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/client_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: unless-stopped
+
+  # ACCOUNT SERVICE
+  account-service:
+    build: ./services/account-service
+    container_name: account-service
+    networks:
+      - banking-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/account_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+    restart: unless-stopped
+
+  # API GATEWAY
+  api-gateway:
+    build: ./services/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - banking-network
+    depends_on:
+      - client-service
+      - account-service
     restart: unless-stopped
 
 volumes:
