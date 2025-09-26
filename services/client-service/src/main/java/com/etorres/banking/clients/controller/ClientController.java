@@ -109,7 +109,7 @@ public class ClientController {
     @PutMapping("/{id}")
     public ResponseEntity<ClientDTO> updateClient(@PathVariable Long id, @RequestBody ClientDTO clientDTO) {
         log.info("INFO: Actualizando cliente con ID: {}", id);
-        return clientService.updateCliente(id, clientDTO)
+        return clientService.updateClient(id, clientDTO)
                 .map(updatedClient -> {
                     log.info("INFO: Cliente actualizado exitosamente: {}", updatedClient.clientId());
                     return ResponseEntity.ok(updatedClient);

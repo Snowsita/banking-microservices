@@ -41,7 +41,7 @@ public interface ClientService {
      * @param clientDTO La nueva data del cliente.
      * @return La data actualizada del cliente si se encuentra, opcional en caso contrario.
      */
-    Optional<ClientDTO> updateCliente(Long id, ClientDTO clientDTO);
+    Optional<ClientDTO> updateClient(Long id, ClientDTO clientDTO);
 
     /**
      * Elimina un cliente del sistema por su ID.

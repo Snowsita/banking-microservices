@@ -2,6 +2,7 @@ package com.etorres.banking.clients.service;
 
 import com.etorres.banking.clients.dto.ClientDTO;
 import com.etorres.banking.clients.dto.CreateClientRequest;
+import com.etorres.banking.clients.mapper.ClientMapper;
 import com.etorres.banking.clients.model.Client;
 import com.etorres.banking.clients.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,9 @@ public class ClientServiceImplTest {
 
     @Mock
     private ClientRepository clientRepository;
+
+    @Mock
+    private ClientMapper clientMapper;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -46,14 +50,15 @@ public class ClientServiceImplTest {
                 true
         );
 
-        var savedCliente = new Client();
-        savedCliente.setId(1L);
-        savedCliente.setClientId(createRequest.clientId());
-        savedCliente.setName(createRequest.name());
-        savedCliente.setPassword("hashedPassword");
+        var clientEntity = new Client();
+        var savedClient = new Client();
+        savedClient.setId(1L);
+        var expectedDto = new ClientDTO(1L, "C-12345", "Enmanuel Torres", null, 0, null, null, null, true);
 
+        when(clientMapper.toEntity(createRequest)).thenReturn(clientEntity);
         when(passwordEncoder.encode(createRequest.password())).thenReturn("hashedPassword");
-        when(clientRepository.save(any(Client.class))).thenReturn(savedCliente);
+        when(clientRepository.save(clientEntity)).thenReturn(savedClient);
+        when(clientMapper.toDto(savedClient)).thenReturn(expectedDto);
 
         ClientDTO resultDTO = clientService.createClient(createRequest);
 
@@ -64,5 +69,7 @@ public class ClientServiceImplTest {
 
         verify(passwordEncoder, times(1)).encode("rawPassword123");
         verify(clientRepository, times(1)).save(any(Client.class));
+        verify(clientMapper, times(1)).toEntity(createRequest);
+        verify(clientMapper, times(1)).toDto(savedClient);
     }
 }

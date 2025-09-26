@@ -2,6 +2,7 @@ package com.etorres.banking.clients.service;
 
 import com.etorres.banking.clients.dto.ClientDTO;
 import com.etorres.banking.clients.dto.CreateClientRequest;
+import com.etorres.banking.clients.mapper.ClientMapper;
 import com.etorres.banking.clients.model.Client;
 import com.etorres.banking.clients.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,25 +22,19 @@ public class ClientServiceImpl implements ClientService {
     private static final Logger log = LoggerFactory.getLogger(ClientServiceImpl.class);
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ClientMapper clientMapper;
 
     @Override
     @Transactional
-    public ClientDTO createClient(CreateClientRequest clientDTO) {
-        log.info("INFO: Creando un nuevo cliente con clientId: {}", clientDTO.clientId());
-        Client client = new Client();
-        client.setClientId(clientDTO.clientId());
-        client.setPassword(passwordEncoder.encode(clientDTO.password()));
-        client.setName(clientDTO.name());
-        client.setGender(clientDTO.gender());
-        client.setAge(clientDTO.age());
-        client.setIdentification(clientDTO.identification());
-        client.setAddress(clientDTO.address());
-        client.setPhone(clientDTO.phone());
-        client.setStatus(clientDTO.status());
+    public ClientDTO createClient(CreateClientRequest createClientRequest) {
+        log.info("INFO: Creando un nuevo cliente con clientId: {}", createClientRequest.clientId());
+        Client client = clientMapper.toEntity(createClientRequest);
+
+        client.setPassword(passwordEncoder.encode(createClientRequest.password()));
 
         Client savedClient = clientRepository.save(client);
         log.info("INFO: Cliente guardado con ID: {}", savedClient.getId());
-        return convertToDTO(savedClient);
+        return clientMapper.toDto(savedClient);
     }
 
     @Override
@@ -48,14 +43,14 @@ public class ClientServiceImpl implements ClientService {
         log.info("INFO: Obteniendo todos los clientes");
         List<Client> clients = clientRepository.findAll();
         log.info("INFO: Encontrados {} clientes", clients.size());
-        return clients.stream().map(this::convertToDTO).toList();
+        return clients.stream().map(clientMapper::toDto).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<ClientDTO> getClientById(Long id) {
         log.info("INFO: Buscando cliente por ID: {}", id);
-        Optional<ClientDTO> clientDTO = clientRepository.findById(id).map(this::convertToDTO);
+        Optional<ClientDTO> clientDTO = clientRepository.findById(id).map(clientMapper::toDto);
         if (clientDTO.isPresent()) {
             log.info("INFO: Cliente encontrado con ID: {}", id);
         } else {
@@ -68,7 +63,7 @@ public class ClientServiceImpl implements ClientService {
     @Transactional(readOnly = true)
     public Optional<ClientDTO> getClientById(String clientId) {
         log.info("INFO: Buscando cliente por clientId: {}", clientId);
-        Optional<ClientDTO> clientDTO = clientRepository.findByClientId(clientId).map(this::convertToDTO);
+        Optional<ClientDTO> clientDTO = clientRepository.findByClientId(clientId).map(clientMapper::toDto);
         if (clientDTO.isPresent()) {
             log.info("INFO: Cliente encontrado con clientId: {}", clientId);
         } else {
@@ -79,20 +74,16 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public Optional<ClientDTO> updateCliente(Long id, ClientDTO clientDTO) {
+    public Optional<ClientDTO> updateClient(Long id, ClientDTO clientDTO) {
         log.info("INFO: Actualizando cliente con ID: {}", id);
         return clientRepository.findById(id).map(existingClient -> {
             log.info("INFO: Cliente encontrado para actualizar. ID: {}", id);
-            existingClient.setName(clientDTO.name());
-            existingClient.setGender(clientDTO.gender());
-            existingClient.setAge(clientDTO.age());
-            existingClient.setIdentification(clientDTO.identification());
-            existingClient.setAddress(clientDTO.address());
-            existingClient.setPhone(clientDTO.phone());
-            existingClient.setStatus(clientDTO.status());
+            clientMapper.updateEntityFromDto(clientDTO, existingClient);
+
             Client updatedClient = clientRepository.save(existingClient);
             log.info("INFO: Cliente actualizado con ID: {}", updatedClient.getId());
-            return convertToDTO(updatedClient);
+
+            return clientMapper.toDto(updatedClient);
         });
     }
 
@@ -107,19 +98,5 @@ public class ClientServiceImpl implements ClientService {
         }
         log.warn("WARN: No se pudo eliminar. Cliente no encontrado con ID: {}", id);
         return false;
-    }
-
-    private ClientDTO convertToDTO(Client client) {
-        return new ClientDTO(
-                client.getId(),
-                client.getClientId(),
-                client.getName(),
-                client.getGender(),
-                client.getAge(),
-                client.getIdentification(),
-                client.getAddress(),
-                client.getPhone(),
-                client.getStatus()
-        );
     }
 }
