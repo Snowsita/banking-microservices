@@ -25,6 +25,9 @@ Each service is a Spring Boot application with its own PostgreSQL database.
 *   **Build Tool**: Maven
 *   **API Documentation**: SpringDoc OpenAPI
 *   **Containerization**: Docker
+*   **Logging**: SLF4J
+*   **Mappers**: MapStruct
+*   **Validation**: Jakarta Bean Validation for DTOs
 
 ## Database
 
