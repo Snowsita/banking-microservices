@@ -1,9 +1,9 @@
 package com.etorres.banking.clients.service;
 
-import com.etorres.banking.clients.dto.ClienteDTO;
+import com.etorres.banking.clients.dto.ClientDTO;
 import com.etorres.banking.clients.dto.CreateClientRequest;
-import com.etorres.banking.clients.model.Cliente;
-import com.etorres.banking.clients.repository.ClienteRepository;
+import com.etorres.banking.clients.model.Client;
+import com.etorres.banking.clients.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,23 +17,23 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ClienteServiceImplTest {
+public class ClientServiceImplTest {
 
     @Mock
-    private ClienteRepository clienteRepository;
+    private ClientRepository clientRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private ClienteServiceImpl clienteService;
+    private ClientServiceImpl clientService;
 
     /**
-     * Test para verificar la creaciÛn de un cliente con datos v·lidos.
-     * Verifica que el cliente se guarda correctamente y que la contraseÒa se encripta.
+     * Test para verificar la creaci√≥n de un cliente con datos v√°lidos.
+     * Verifica que el cliente se guarda correctamente y que la contrase√±a se encripta.
      */
     @Test
-    void whenCreateCliente_withValidData_thenClienteIsCreated() {
+    void whenCreateClient_withValidData_thenClientIsCreated() {
         var createRequest = new CreateClientRequest(
                 "C-12345",
                 "rawPassword123",
@@ -46,16 +46,16 @@ public class ClienteServiceImplTest {
                 true
         );
 
-        var savedCliente = new Cliente();
+        var savedCliente = new Client();
         savedCliente.setId(1L);
         savedCliente.setClientId(createRequest.clientId());
         savedCliente.setName(createRequest.name());
         savedCliente.setPassword("hashedPassword");
 
         when(passwordEncoder.encode(createRequest.password())).thenReturn("hashedPassword");
-        when(clienteRepository.save(any(Cliente.class))).thenReturn(savedCliente);
+        when(clientRepository.save(any(Client.class))).thenReturn(savedCliente);
 
-        ClienteDTO resultDTO = clienteService.createCliente(createRequest);
+        ClientDTO resultDTO = clientService.createClient(createRequest);
 
         assertNotNull(resultDTO);
         assertEquals(1L, resultDTO.id());
@@ -63,6 +63,6 @@ public class ClienteServiceImplTest {
         assertEquals("C-12345", resultDTO.clientId());
 
         verify(passwordEncoder, times(1)).encode("rawPassword123");
-        verify(clienteRepository, times(1)).save(any(Cliente.class));
+        verify(clientRepository, times(1)).save(any(Client.class));
     }
 }

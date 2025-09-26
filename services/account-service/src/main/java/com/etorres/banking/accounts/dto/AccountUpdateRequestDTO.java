@@ -1,6 +1,6 @@
 package com.etorres.banking.accounts.dto;
 
-public record CuentaUpdateRequestDTO(
+public record AccountUpdateRequestDTO(
         String accountType,
         Boolean status
 ) {

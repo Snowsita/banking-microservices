@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @PrimaryKeyJoinColumn(name = "persona_id")
-public class Cliente extends Persona {
+public class Client extends Person {
 
     @Column(name = "client_id", nullable = false, unique = true)
     private String clientId;

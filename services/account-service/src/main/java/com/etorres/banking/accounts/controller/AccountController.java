@@ -1,9 +1,9 @@
 package com.etorres.banking.accounts.controller;
 
-import com.etorres.banking.accounts.dto.CuentaRequestDTO;
-import com.etorres.banking.accounts.dto.CuentaResponseDTO;
-import com.etorres.banking.accounts.dto.CuentaUpdateRequestDTO;
-import com.etorres.banking.accounts.service.CuentaService;
+import com.etorres.banking.accounts.dto.AccountRequestDTO;
+import com.etorres.banking.accounts.dto.AccountResponseDTO;
+import com.etorres.banking.accounts.dto.AccountUpdateRequestDTO;
+import com.etorres.banking.accounts.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/accounts")
-public class CuentaController {
+public class AccountController {
 
-    private final CuentaService cuentaService;
+    private final AccountService accountService;
 
     /**
      * Endpoint para crear una nueva cuenta bancaria.
@@ -26,8 +26,8 @@ public class CuentaController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CuentaResponseDTO createAccount(@RequestBody CuentaRequestDTO request) {
-        return cuentaService.create(request);
+    public AccountResponseDTO createAccount(@RequestBody AccountRequestDTO request) {
+        return accountService.create(request);
     }
 
     /**
@@ -38,8 +38,8 @@ public class CuentaController {
      * @return DTO con los datos de la cuenta si se encuentra, o 404 Not Found si no existe.
      */
     @GetMapping("/{accountNumber}")
-    public ResponseEntity<CuentaResponseDTO> getAccountByNumber(@PathVariable String accountNumber) {
-        return cuentaService.findByAccountNumber(accountNumber)
+    public ResponseEntity<AccountResponseDTO> getAccountByNumber(@PathVariable String accountNumber) {
+        return accountService.findByAccountNumber(accountNumber)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -53,8 +53,8 @@ public class CuentaController {
      * @return DTO con los datos actualizados de la cuenta si se encuentra, o 404 Not Found si no existe.
      */
     @PutMapping("/{accountNumber}")
-    public ResponseEntity<CuentaResponseDTO> updateAccount(@PathVariable String accountNumber, @RequestBody CuentaUpdateRequestDTO request) {
-        return cuentaService.update(accountNumber, request)
+    public ResponseEntity<AccountResponseDTO> updateAccount(@PathVariable String accountNumber, @RequestBody AccountUpdateRequestDTO request) {
+        return accountService.update(accountNumber, request)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound()
                         .build());

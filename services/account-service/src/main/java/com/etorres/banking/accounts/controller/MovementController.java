@@ -1,8 +1,8 @@
 package com.etorres.banking.accounts.controller;
 
-import com.etorres.banking.accounts.dto.MovimientoRequestDTO;
-import com.etorres.banking.accounts.dto.MovimientoResponseDTO;
-import com.etorres.banking.accounts.service.MovimientoService;
+import com.etorres.banking.accounts.dto.MovementRequestDTO;
+import com.etorres.banking.accounts.dto.MovementResponseDTO;
+import com.etorres.banking.accounts.service.MovementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/movements")
-public class MovimientoController {
+public class MovementController {
 
-    private final MovimientoService movimientoService;
+    private final MovementService movementService;
 
     /**
      * Endpoint para crear un nuevo movimiento bancario.
@@ -24,7 +24,7 @@ public class MovimientoController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovimientoResponseDTO createMovement(@RequestBody MovimientoRequestDTO request) {
-        return movimientoService.create(request);
+    public MovementResponseDTO createMovement(@RequestBody MovementRequestDTO request) {
+        return movementService.create(request);
     }
 }

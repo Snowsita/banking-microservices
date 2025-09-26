@@ -1,7 +1,7 @@
 package com.etorres.banking.accounts.controller;
 
-import com.etorres.banking.accounts.dto.CuentaStatementDTO;
-import com.etorres.banking.accounts.service.ReporteService;
+import com.etorres.banking.accounts.dto.AccountStatementDTO;
+import com.etorres.banking.accounts.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +14,9 @@ import java.time.LocalDate;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/reports")
-public class ReporteController {
+public class ReportController {
 
-    private final ReporteService reporteService;
+    private final ReportService reportService;
 
     /**
      * Genera un estado de cuenta para un cliente en un rango de fechas específico.
@@ -29,11 +29,11 @@ public class ReporteController {
      * @return CuentaStatementDTO con el estado de cuenta del cliente
      */
     @GetMapping
-    public CuentaStatementDTO getAccountStatement(
+    public AccountStatementDTO getAccountStatement(
             @RequestParam String clientId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        return reporteService.generateStatement(clientId, startDate, endDate);
+        return reportService.generateStatement(clientId, startDate, endDate);
     }
 }

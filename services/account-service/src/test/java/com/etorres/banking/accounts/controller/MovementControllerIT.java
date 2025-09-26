@@ -1,7 +1,9 @@
-package com.etorres.banking.clients.controller;
+package com.etorres.banking.accounts.controller;
 
-import com.etorres.banking.clients.dto.CreateClientRequest;
-import com.etorres.banking.clients.repository.ClienteRepository;
+import com.etorres.banking.accounts.dto.MovementRequestDTO;
+import com.etorres.banking.accounts.model.Account;
+import com.etorres.banking.accounts.repository.AccountRepository;
+import com.etorres.banking.accounts.repository.MovementRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.math.BigDecimal;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers
-public class ClienteControllerIT {
+public class MovementControllerIT {
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
@@ -36,7 +42,10 @@ public class ClienteControllerIT {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private MovementRepository movementRepository;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -47,35 +56,38 @@ public class ClienteControllerIT {
 
     @BeforeEach
     void setUp() {
-        clienteRepository.deleteAll();
+        movementRepository.deleteAll();
+        accountRepository.deleteAll();
+
+        Account testAccount = new Account();
+        testAccount.setAccountNumber("123456");
+        testAccount.setAccountType("Corriente");
+        testAccount.setInitialBalance(new BigDecimal("1000.00"));
+        testAccount.setCurrentBalance(new BigDecimal("1000.00"));
+        testAccount.setStatus(true);
+        testAccount.setClientId("C-IT-002");
+        accountRepository.save(testAccount);
     }
 
     /**
-     * Test de integración para la creación de un cliente.
-     * Verifica que al enviar una solicitud POST a /api/v1/clientes con datos válidos,
-     * se cree un nuevo cliente en la base de datos y se retornen los datos correctos.
+     * Test para verificar la creaciÃ³n de un movimiento y la actualizaciÃ³n del balance de la cuenta.
+     * Verifica que el movimiento se crea correctamente y que el balance de la cuenta se actualiza.
      */
     @Test
-    void whenPostCliente_thenCreatesClienteInDb() throws Exception {
-        var createRequest = new CreateClientRequest(
-                "C-99999",
-                "securePassword",
-                "Integration Test User",
-                "N/A",
-                40,
-                "999-999999-9999Z",
-                "789 Test Lane",
-                "5555-4444",
-                true
-        );
+    void whenPostMovement_thenCreatesMovementAndUpdatesBalance() throws  Exception {
+        var request = new MovementRequestDTO("123456", new BigDecimal("250.00"));
 
-        mockMvc.perform(post("/api/v1/clientes")
+        mockMvc.perform(post("/api/v1/movements")
                         .with(httpBasic("admin", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createRequest)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value("Integration Test User"))
-                .andExpect(jsonPath("$.clientId").value("C-99999"));
+                .andExpect(jsonPath("$.value", is(250.00)))
+                .andExpect(jsonPath("$.balance", is(1250.00)));
+
+        assertEquals(1, movementRepository.count());
+
+        Account updatedAccount = accountRepository.findByAccountNumber("123456").get();
+        assertEquals(0, new BigDecimal("1250.00").compareTo(updatedAccount.getCurrentBalance()));
     }
 }

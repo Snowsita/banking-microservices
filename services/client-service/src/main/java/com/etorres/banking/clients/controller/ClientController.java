@@ -1,8 +1,8 @@
 package com.etorres.banking.clients.controller;
 
-import com.etorres.banking.clients.dto.ClienteDTO;
+import com.etorres.banking.clients.dto.ClientDTO;
 import com.etorres.banking.clients.dto.CreateClientRequest;
-import com.etorres.banking.clients.service.ClienteService;
+import com.etorres.banking.clients.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +13,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/clients")
-public class ClienteController {
+public class ClientController {
 
-    private final ClienteService clienteService;
+    private final ClientService clientService;
 
     /**
      * Crea un nuevo cliente.
@@ -27,8 +27,8 @@ public class ClienteController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ClienteDTO createCliente(@RequestBody CreateClientRequest createClientRequest) {
-        return clienteService.createCliente(createClientRequest);
+    public ClientDTO createClient(@RequestBody CreateClientRequest createClientRequest) {
+        return clientService.createClient(createClientRequest);
     }
 
     /**
@@ -39,8 +39,8 @@ public class ClienteController {
      * @return Lista de clientes.
      */
     @GetMapping
-    public List<ClienteDTO> getAllClientes() {
-        return clienteService.getAllClientes();
+    public List<ClientDTO> getAllClients() {
+        return clientService.getAllClients();
     }
 
     /**
@@ -52,8 +52,8 @@ public class ClienteController {
      * @return La data del cliente si se encuentra, 404 Not Found en caso contrario.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteDTO> getClienteById(@PathVariable Long id) {
-        return clienteService.getClienteById(id)
+    public ResponseEntity<ClientDTO> getClientById(@PathVariable Long id) {
+        return clientService.getClientById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -67,8 +67,8 @@ public class ClienteController {
      * @return La data del cliente si se encuentra, 404 Not Found en caso contrario.
      */
     @GetMapping("/clientId/{clientId}")
-    public ResponseEntity<ClienteDTO> getClienteByClientId(@PathVariable String clientId) {
-        return clienteService.getClienteById(clientId)
+    public ResponseEntity<ClientDTO> getClientByClientId(@PathVariable String clientId) {
+        return clientService.getClientById(clientId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -79,12 +79,12 @@ public class ClienteController {
      * URL: /api/v1/clientes/{id}
      * Response Status: 200 OK si se actualiza, 404 Not Found si no se encuentra.
      * @param id El ID del cliente a actualizar.
-     * @param clienteDTO La nueva data del cliente.
+     * @param clientDTO La nueva data del cliente.
      * @return La data actualizada del cliente si se encuentra, 404 Not Found en caso contrario.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO> updateCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
-        return clienteService.updateCliente(id, clienteDTO)
+    public ResponseEntity<ClientDTO> updateClient(@PathVariable Long id, @RequestBody ClientDTO clientDTO) {
+        return clientService.updateCliente(id, clientDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -98,8 +98,8 @@ public class ClienteController {
      * @return 204 No Content si se elimina, 404 Not Found en caso contrario.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
-        if (clienteService.deleteCliente(id)) {
+    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+        if (clientService.deleteClient(id)) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();

@@ -1,6 +1,6 @@
 package com.etorres.banking.clients.dto;
 
-public record ClienteDTO(
+public record ClientDTO(
         Long id,
         String clientId,
         String name,

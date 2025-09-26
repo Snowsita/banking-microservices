@@ -3,7 +3,7 @@ package com.etorres.banking.accounts.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record CuentaStatementDTO(
+public record AccountStatementDTO(
         String dateRange,
         String clientName,
         List<AccountDetail> accounts
@@ -13,7 +13,7 @@ public record CuentaStatementDTO(
             String accountType,
             BigDecimal initialBalance,
             BigDecimal currentBalance,
-            List<MovimientoResponseDTO> movements
+            List<MovementResponseDTO> movements
     ) {
     }
 }

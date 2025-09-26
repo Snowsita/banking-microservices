@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Persona {
+public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

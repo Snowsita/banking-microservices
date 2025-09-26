@@ -2,7 +2,7 @@ package com.etorres.banking.accounts.dto;
 
 import java.math.BigDecimal;
 
-public record CuentaResponseDTO(
+public record AccountResponseDTO(
         Long id,
         String accountNumber,
         String accountType,

@@ -1,11 +1,11 @@
 package com.etorres.banking.accounts.service;
 
 import com.etorres.banking.accounts.client.ClientServiceFeignClient;
-import com.etorres.banking.accounts.dto.CuentaStatementDTO;
-import com.etorres.banking.accounts.dto.MovimientoResponseDTO;
-import com.etorres.banking.accounts.model.Cuenta;
-import com.etorres.banking.accounts.repository.CuentaRepository;
-import com.etorres.banking.accounts.repository.MovimientoRepository;
+import com.etorres.banking.accounts.dto.AccountStatementDTO;
+import com.etorres.banking.accounts.dto.MovementResponseDTO;
+import com.etorres.banking.accounts.model.Account;
+import com.etorres.banking.accounts.repository.AccountRepository;
+import com.etorres.banking.accounts.repository.MovementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,26 +17,26 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ReporteServiceImpl implements ReporteService {
+public class ReportServiceImpl implements ReportService {
 
-    private final CuentaRepository cuentaRepository;
-    private final MovimientoRepository movimientoRepository;
+    private final AccountRepository accountRepository;
+    private final MovementRepository movementRepository;
     private final ClientServiceFeignClient clientServiceFeignClient;
 
     @Override
     @Transactional(readOnly = true)
-    public CuentaStatementDTO generateStatement(String clientId, LocalDate startDate, LocalDate endDate) {
-        List<Cuenta> cuentas = cuentaRepository.findByClientId(clientId);
+    public AccountStatementDTO generateStatement(String clientId, LocalDate startDate, LocalDate endDate) {
+        List<Account> accounts = accountRepository.findByClientId(clientId);
 
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
-        List<CuentaStatementDTO.AccountDetail> accountDetails = cuentas.stream().map(cuenta -> {
-            List<MovimientoResponseDTO> movements = movimientoRepository
+        List<AccountStatementDTO.AccountDetail> accountDetails = accounts.stream().map(cuenta -> {
+            List<MovementResponseDTO> movements = movementRepository
                     .findByAccount_ClientIdAndDateBetweenOrderByDateAsc(clientId, startDateTime, endDateTime)
                     .stream()
                     .filter(movimiento -> movimiento.getAccount().getId().equals(cuenta.getId()))
-                    .map(movimiento -> new MovimientoResponseDTO(
+                    .map(movimiento -> new MovementResponseDTO(
                             movimiento.getId(),
                             movimiento.getDate(),
                             movimiento.getMovementType(),
@@ -45,7 +45,7 @@ public class ReporteServiceImpl implements ReporteService {
                     ))
                     .toList();
 
-            return new CuentaStatementDTO.AccountDetail(
+            return new AccountStatementDTO.AccountDetail(
                     cuenta.getAccountNumber(),
                     cuenta.getAccountType(),
                     cuenta.getInitialBalance(),
@@ -58,6 +58,6 @@ public class ReporteServiceImpl implements ReporteService {
 
         String clientName = clientServiceFeignClient.getClientById(clientId).name();
 
-        return new CuentaStatementDTO(dateRange, clientName, accountDetails);
+        return new AccountStatementDTO(dateRange, clientName, accountDetails);
     }
 }
