@@ -3,6 +3,8 @@ package com.etorres.banking.accounts.service;
 import com.etorres.banking.accounts.client.ClientServiceFeignClient;
 import com.etorres.banking.accounts.dto.AccountStatementDTO;
 import com.etorres.banking.accounts.dto.MovementResponseDTO;
+import com.etorres.banking.accounts.mapper.AccountStatementMapper;
+import com.etorres.banking.accounts.mapper.MovementMapper;
 import com.etorres.banking.accounts.model.Account;
 import com.etorres.banking.accounts.repository.AccountRepository;
 import com.etorres.banking.accounts.repository.MovementRepository;
@@ -26,6 +28,9 @@ public class ReportServiceImpl implements ReportService {
     private final MovementRepository movementRepository;
     private final ClientServiceFeignClient clientServiceFeignClient;
 
+    private final MovementMapper movementMapper;
+    private final AccountStatementMapper accountStatementMapper;
+
     @Override
     @Transactional(readOnly = true)
     public AccountStatementDTO generateStatement(String clientId, LocalDate startDate, LocalDate endDate) {
@@ -36,29 +41,17 @@ public class ReportServiceImpl implements ReportService {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
-        List<AccountStatementDTO.AccountDetail> accountDetails = accounts.stream().map(cuenta -> {
-            log.info("INFO: Procesando cuenta con número: {}", cuenta.getAccountNumber());
+        List<AccountStatementDTO.AccountDetail> accountDetails = accounts.stream().map(account -> {
+            log.info("INFO: Procesando cuenta con número: {}", account.getAccountNumber());
             List<MovementResponseDTO> movements = movementRepository
                     .findByAccount_ClientIdAndDateBetweenOrderByDateAsc(clientId, startDateTime, endDateTime)
                     .stream()
-                    .filter(movimiento -> movimiento.getAccount().getId().equals(cuenta.getId()))
-                    .map(movimiento -> new MovementResponseDTO(
-                            movimiento.getId(),
-                            movimiento.getDate(),
-                            movimiento.getMovementType(),
-                            movimiento.getValue(),
-                            movimiento.getBalance()
-                    ))
+                    .filter(movimiento -> movimiento.getAccount().getId().equals(account.getId()))
+                    .map(movementMapper::toDto)
                     .toList();
-            log.info("INFO: Se encontraron {} movimientos para la cuenta: {}", movements.size(), cuenta.getAccountNumber());
+            log.info("INFO: Se encontraron {} movimientos para la cuenta: {}", movements.size(), account.getAccountNumber());
 
-            return new AccountStatementDTO.AccountDetail(
-                    cuenta.getAccountNumber(),
-                    cuenta.getAccountType(),
-                    cuenta.getInitialBalance(),
-                    cuenta.getCurrentBalance(),
-                    movements
-            );
+            return accountStatementMapper.toAccountDetail(account, movements);
         }).toList();
 
         String dateRange = String.format("%s to %s", startDate, endDate);

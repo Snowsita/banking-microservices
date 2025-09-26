@@ -3,6 +3,7 @@ package com.etorres.banking.accounts.service;
 import com.etorres.banking.accounts.dto.MovementRequestDTO;
 import com.etorres.banking.accounts.dto.MovementResponseDTO;
 import com.etorres.banking.accounts.exception.SaldoInsuficienteException;
+import com.etorres.banking.accounts.mapper.MovementMapper;
 import com.etorres.banking.accounts.model.Account;
 import com.etorres.banking.accounts.model.Movement;
 import com.etorres.banking.accounts.repository.AccountRepository;
@@ -21,6 +22,9 @@ public class MovementServiceImpl implements MovementService {
 
     private static final Logger log = LoggerFactory.getLogger(MovementServiceImpl.class);
     private final AccountRepository accountRepository;
+
+    private final MovementMapper movementMapper;
+
     private static final String DEBIT_TYPE = "DEBIT";
     private static final String CREDIT_TYPE = "CREDIT";
 
@@ -47,23 +51,14 @@ public class MovementServiceImpl implements MovementService {
         account.setCurrentBalance(newBalance);
         log.info("INFO: Nuevo saldo: {}", newBalance);
 
-        Movement newMovement = new Movement();
-        newMovement.setAccount(account);
-        newMovement.setDate(LocalDateTime.now());
-        newMovement.setValue(movementValue);
-        newMovement.setBalance(newBalance);
-        newMovement.setMovementType(movementValue.compareTo(BigDecimal.ZERO) > 0 ? CREDIT_TYPE : DEBIT_TYPE);
+        String movementType = movementValue.compareTo(BigDecimal.ZERO) > 0 ? CREDIT_TYPE : DEBIT_TYPE;
+
+        Movement newMovement = movementMapper.toEntity(request, account, newBalance, LocalDateTime.now(), movementType);
 
         account.getMovements().add(newMovement);
         accountRepository.save(account);
         log.info("INFO: Movimiento guardado con ID: {}", newMovement.getId());
 
-        return new MovementResponseDTO(
-                newMovement.getId(),
-                newMovement.getDate(),
-                newMovement.getMovementType(),
-                newMovement.getValue(),
-                newMovement.getBalance()
-        );
+        return movementMapper.toDto(newMovement);
     }
 }

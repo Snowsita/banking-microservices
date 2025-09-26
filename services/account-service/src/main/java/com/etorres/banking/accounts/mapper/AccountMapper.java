@@ -1,13 +1,22 @@
 package com.etorres.banking.accounts.mapper;
 
-import com.etorres.banking.accounts.dto.AccountStatementDTO;
-import com.etorres.banking.accounts.dto.MovementResponseDTO;
+import com.etorres.banking.accounts.dto.AccountRequestDTO;
+import com.etorres.banking.accounts.dto.AccountResponseDTO;
+import com.etorres.banking.accounts.dto.AccountUpdateRequestDTO;
 import com.etorres.banking.accounts.model.Account;
 import org.mapstruct.Mapper;
-
-import java.util.List;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
-    AccountStatementDTO.AccountDetail toAccountDetail(Account account, List<MovementResponseDTO> movements);
+
+    AccountResponseDTO toDto(Account account);
+
+    @Mapping(target = "currentBalance", source = "initialBalance")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "movements", ignore = true)
+    Account toEntity(AccountRequestDTO accountRequestDTO);
+
+    void updateEntityFromDto(AccountUpdateRequestDTO accountUpdateRequestDTO, @MappingTarget Account account);
 }
