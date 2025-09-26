@@ -5,6 +5,8 @@ import com.etorres.banking.accounts.dto.MovementResponseDTO;
 import com.etorres.banking.accounts.service.MovementService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/movements")
 public class MovementController {
 
+    private static final Logger log = LoggerFactory.getLogger(MovementController.class);
     private final MovementService movementService;
 
     /**
@@ -26,6 +29,9 @@ public class MovementController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MovementResponseDTO createMovement(@RequestBody @Valid MovementRequestDTO request) {
-        return movementService.create(request);
+        log.info("INFO: Creando nuevo movimiento para la cuenta: {}", request.accountNumber());
+        MovementResponseDTO response = movementService.create(request);
+        log.info("INFO: Movimiento creado exitosamente con ID: {}", response.id());
+        return response;
     }
 }

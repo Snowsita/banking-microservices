@@ -5,6 +5,8 @@ import com.etorres.banking.clients.dto.CreateClientRequest;
 import com.etorres.banking.clients.service.ClientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/v1/clients")
 public class ClientController {
 
+    private static final Logger log = LoggerFactory.getLogger(ClientController.class);
     private final ClientService clientService;
 
     /**
@@ -29,7 +32,10 @@ public class ClientController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ClientDTO createClient(@RequestBody @Valid CreateClientRequest createClientRequest) {
-        return clientService.createClient(createClientRequest);
+        log.info("INFO: Creando nuevo cliente: {}", createClientRequest.clientId());
+        ClientDTO createdClient = clientService.createClient(createClientRequest);
+        log.info("INFO: Cliente creado exitosamente: {}", createdClient.clientId());
+        return createdClient;
     }
 
     /**
@@ -41,7 +47,10 @@ public class ClientController {
      */
     @GetMapping
     public List<ClientDTO> getAllClients() {
-        return clientService.getAllClients();
+        log.info("INFO: Obteniendo todos los clientes");
+        List<ClientDTO> clients = clientService.getAllClients();
+        log.info("INFO: Se encontraron {} clientes", clients.size());
+        return clients;
     }
 
     /**
@@ -54,9 +63,16 @@ public class ClientController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ClientDTO> getClientById(@PathVariable Long id) {
+        log.info("INFO: Buscando cliente por ID: {}", id);
         return clientService.getClientById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(client -> {
+                    log.info("INFO: Cliente encontrado: {}", client.clientId());
+                    return ResponseEntity.ok(client);
+                })
+                .orElseGet(() -> {
+                    log.warn("WARN: Cliente no encontrado con ID: {}", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     /**
@@ -69,9 +85,16 @@ public class ClientController {
      */
     @GetMapping("/clientId/{clientId}")
     public ResponseEntity<ClientDTO> getClientByClientId(@PathVariable String clientId) {
+        log.info("INFO: Buscando cliente por clientId: {}", clientId);
         return clientService.getClientById(clientId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(client -> {
+                    log.info("INFO: Cliente encontrado: {}", client.clientId());
+                    return ResponseEntity.ok(client);
+                })
+                .orElseGet(() -> {
+                    log.warn("WARN: Cliente no encontrado con clientId: {}", clientId);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     /**
@@ -85,9 +108,16 @@ public class ClientController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ClientDTO> updateClient(@PathVariable Long id, @RequestBody ClientDTO clientDTO) {
+        log.info("INFO: Actualizando cliente con ID: {}", id);
         return clientService.updateCliente(id, clientDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(updatedClient -> {
+                    log.info("INFO: Cliente actualizado exitosamente: {}", updatedClient.clientId());
+                    return ResponseEntity.ok(updatedClient);
+                })
+                .orElseGet(() -> {
+                    log.warn("WARN: Cliente no encontrado para actualizar con ID: {}", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     /**
@@ -100,9 +130,12 @@ public class ClientController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+        log.info("INFO: Eliminando cliente con ID: {}", id);
         if (clientService.deleteClient(id)) {
+            log.info("INFO: Cliente eliminado exitosamente con ID: {}", id);
             return ResponseEntity.noContent().build();
         } else {
+            log.warn("WARN: Cliente no encontrado para eliminar con ID: {}", id);
             return ResponseEntity.notFound().build();
         }
     }

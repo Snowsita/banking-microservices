@@ -66,9 +66,7 @@ public class MovementServiceImplTest {
 
         when(accountRepository.findByAccountNumber("123456")).thenReturn(Optional.of(testAccount));
 
-        assertThrows(SaldoInsuficienteException.class, () -> {
-            movimientoService.create(request);
-        });
+        assertThrows(SaldoInsuficienteException.class, () -> movimientoService.create(request));
 
         verify(accountRepository, never()).save(any(Account.class));
     }

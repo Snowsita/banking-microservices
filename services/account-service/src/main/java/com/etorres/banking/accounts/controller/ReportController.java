@@ -3,6 +3,8 @@ package com.etorres.banking.accounts.controller;
 import com.etorres.banking.accounts.dto.AccountStatementDTO;
 import com.etorres.banking.accounts.service.ReportService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 @RequestMapping("/api/v1/reports")
 public class ReportController {
 
+    private static final Logger log = LoggerFactory.getLogger(ReportController.class);
     private final ReportService reportService;
 
     /**
@@ -34,6 +37,9 @@ public class ReportController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        return reportService.generateStatement(clientId, startDate, endDate);
+        log.info("INFO: Generando estado de cuenta para el cliente ID: {} desde {} hasta {}", clientId, startDate, endDate);
+        AccountStatementDTO statement = reportService.generateStatement(clientId, startDate, endDate);
+        log.info("INFO: Estado de cuenta generado exitosamente para el cliente ID: {}", clientId);
+        return statement;
     }
 }
