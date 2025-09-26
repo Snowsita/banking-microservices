@@ -52,7 +52,7 @@ public class ClientControllerIT {
 
     /**
      * Test de integración para la creación de un cliente.
-     * Verifica que al enviar una solicitud POST a /api/v1/clientes con datos válidos,
+     * Verifica que al enviar una solicitud POST a /api/v1/clients con datos válidos,
      * se cree un nuevo cliente en la base de datos y se retornen los datos correctos.
      */
     @Test

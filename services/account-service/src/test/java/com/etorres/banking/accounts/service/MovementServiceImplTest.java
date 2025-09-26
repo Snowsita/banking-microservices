@@ -1,8 +1,11 @@
 package com.etorres.banking.accounts.service;
 
 import com.etorres.banking.accounts.dto.MovementRequestDTO;
+import com.etorres.banking.accounts.dto.MovementResponseDTO;
 import com.etorres.banking.accounts.exception.SaldoInsuficienteException;
+import com.etorres.banking.accounts.mapper.MovementMapper;
 import com.etorres.banking.accounts.model.Account;
+import com.etorres.banking.accounts.model.Movement;
 import com.etorres.banking.accounts.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,9 @@ public class MovementServiceImplTest {
     @Mock
     private AccountRepository accountRepository;
 
+    @Mock
+    private MovementMapper movementMapper;
+
     @InjectMocks
     private MovementServiceImpl movimientoService;
 
@@ -44,14 +50,19 @@ public class MovementServiceImplTest {
     @Test
     void whenCreateMovement_withSufficientFunds_thenBalanceIsUpdated() {
         var request = new MovementRequestDTO("123456", new BigDecimal("-50.00"));
+        var expectedBalance = new BigDecimal("50.00");
 
         when(accountRepository.findByAccountNumber("123456")).thenReturn(Optional.of(testAccount));
         when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
 
+        when(movementMapper.toEntity(any(), any(), any(), any(), any())).thenReturn(new Movement());
+        when(movementMapper.toDto(any(Movement.class)))
+                .thenReturn(new MovementResponseDTO(1L, null, "DEBIT", request.value(), expectedBalance));
+
         var responseDTO = movimientoService.create(request);
 
         assertNotNull(responseDTO);
-        assertEquals(0, new BigDecimal("50.00").compareTo(responseDTO.balance()));
+        assertEquals(0, expectedBalance.compareTo(responseDTO.balance()));
 
         verify(accountRepository, times(1)).save(any(Account.class));
     }
