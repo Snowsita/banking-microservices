@@ -3,6 +3,7 @@ package com.etorres.banking.accounts.controller;
 import com.etorres.banking.accounts.dto.MovementRequestDTO;
 import com.etorres.banking.accounts.dto.MovementResponseDTO;
 import com.etorres.banking.accounts.service.MovementService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class MovementController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovementResponseDTO createMovement(@RequestBody MovementRequestDTO request) {
+    public MovementResponseDTO createMovement(@RequestBody @Valid MovementRequestDTO request) {
         return movementService.create(request);
     }
 }

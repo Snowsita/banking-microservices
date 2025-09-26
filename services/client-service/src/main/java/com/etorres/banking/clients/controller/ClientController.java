@@ -3,6 +3,7 @@ package com.etorres.banking.clients.controller;
 import com.etorres.banking.clients.dto.ClientDTO;
 import com.etorres.banking.clients.dto.CreateClientRequest;
 import com.etorres.banking.clients.service.ClientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ClientController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ClientDTO createClient(@RequestBody CreateClientRequest createClientRequest) {
+    public ClientDTO createClient(@RequestBody @Valid CreateClientRequest createClientRequest) {
         return clientService.createClient(createClientRequest);
     }
 

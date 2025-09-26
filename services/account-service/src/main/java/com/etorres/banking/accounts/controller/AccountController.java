@@ -4,6 +4,7 @@ import com.etorres.banking.accounts.dto.AccountRequestDTO;
 import com.etorres.banking.accounts.dto.AccountResponseDTO;
 import com.etorres.banking.accounts.dto.AccountUpdateRequestDTO;
 import com.etorres.banking.accounts.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class AccountController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountResponseDTO createAccount(@RequestBody AccountRequestDTO request) {
+    public AccountResponseDTO createAccount(@RequestBody @Valid AccountRequestDTO request) {
         return accountService.create(request);
     }
 
@@ -53,7 +54,7 @@ public class AccountController {
      * @return DTO con los datos actualizados de la cuenta si se encuentra, o 404 Not Found si no existe.
      */
     @PutMapping("/{accountNumber}")
-    public ResponseEntity<AccountResponseDTO> updateAccount(@PathVariable String accountNumber, @RequestBody AccountUpdateRequestDTO request) {
+    public ResponseEntity<AccountResponseDTO> updateAccount(@PathVariable String accountNumber, @RequestBody @Valid AccountUpdateRequestDTO request) {
         return accountService.update(accountNumber, request)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound()
