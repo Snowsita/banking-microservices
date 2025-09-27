@@ -53,10 +53,17 @@ The API Gateway is the single entry point for all the services. The endpoints ar
 
 ### Account Service (`http://localhost:9090`)
 
+#### Accounts
 *   **`POST /api/v1/accounts`**: Creates a new bank account.
 *   **`GET /api/v1/accounts/{accountNumber}`**: Retrieves a bank account by its account number.
 *   **`PUT /api/v1/accounts/{accountNumber}`**: Updates an existing bank account.
+
+#### Movements
 *   **`POST /api/v1/movements`**: Creates a new bank transaction. When a movement is registered, the account balance is updated. If the balance is insufficient, an error with the message "Saldo no disponible" is returned.
+*   **`GET /api/v1/movements/{id}`**: Gets bank transaction by movement id.
+*   **`GET /api/v1/movements/account/{accountNumber}`**: Gets all bank transactions of an account by account number.
+
+#### Reports
 *   **`GET /api/v1/reports?clientId=<clientId>&startDate=<startDate>&endDate=<endDate>`**: Generates an account statement for a client within a specified date range. The report is returned in JSON format and includes the client's accounts with their balances and the details of the movements.
 
 ## How to Run
